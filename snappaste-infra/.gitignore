@@ -16,7 +16,6 @@ terraform.rc
 # Sensitive variable files
 *.auto.tfvars
 secret.tfvars
-terraform.tfvars
 
 # GitHub Actions — advanced workflow (not ready yet)
 .github/workflows/terraform.yml

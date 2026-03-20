@@ -26,13 +26,11 @@ variable "aws_region" {
 variable "instance_type" {
   description = "EC2 instance type for the runner"
   type        = string
-  default     = "t3.medium"
 }
 
 variable "root_volume_size" {
   description = "Root volume size in GB (needs space for Docker images)"
   type        = number
-  default     = 30
 }
 
 variable "github_runner_url" {
@@ -49,7 +47,6 @@ variable "github_runner_token" {
 variable "ecr_repository_names" {
   description = "ECR repository names the runner needs push/pull access to"
   type        = list(string)
-  default     = ["frontend", "backend"]
 }
 
 variable "eks_cluster_arn" {
@@ -60,6 +57,4 @@ variable "eks_cluster_arn" {
 variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
-  default     = {}
 }
-

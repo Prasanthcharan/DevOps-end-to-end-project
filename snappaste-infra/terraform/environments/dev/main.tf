@@ -71,8 +71,8 @@ module "ecr" {
 
   project_name     = local.project_name
   environment      = local.environment
-  repository_names = ["frontend", "backend"]
-  max_image_count  = 10
+  repository_names = var.ecr_repository_names
+  max_image_count  = var.ecr_max_image_count
   common_tags      = local.common_tags
 }
 
@@ -86,6 +86,7 @@ module "jumpbox" {
   environment       = local.environment
   vpc_id            = module.vpc.vpc_id
   private_subnet_id = module.vpc.private_subnet_ids[0]
+  instance_type     = var.jumpbox_instance_type
   common_tags       = local.common_tags
 }
 
@@ -95,17 +96,18 @@ module "jumpbox" {
 module "runner" {
   source = "../../modules/github-runner"
 
-  project_name        = local.project_name
-  environment         = local.environment
-  vpc_id              = module.vpc.vpc_id
-  subnet_id           = module.vpc.private_subnet_ids[0]
-  aws_region          = var.aws_region
-  instance_type       = var.runner_instance_type
-  root_volume_size    = 30
-  github_runner_url   = var.github_runner_url
-  github_runner_token = var.github_runner_token
-  eks_cluster_arn     = module.eks.cluster_arn
-  common_tags         = local.common_tags
+  project_name         = local.project_name
+  environment          = local.environment
+  vpc_id               = module.vpc.vpc_id
+  subnet_id            = module.vpc.private_subnet_ids[0]
+  aws_region           = var.aws_region
+  instance_type        = var.runner_instance_type
+  root_volume_size     = var.runner_volume_size
+  github_runner_url    = var.github_runner_url
+  github_runner_token  = var.github_runner_token
+  ecr_repository_names = var.ecr_repository_names
+  eks_cluster_arn      = module.eks.cluster_arn
+  common_tags          = local.common_tags
 }
 
 # ──────────────────────────────────────────────

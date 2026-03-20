@@ -21,11 +21,9 @@ variable "private_subnet_id" {
 variable "instance_type" {
   description = "EC2 instance type for the jumpbox"
   type        = string
-  default     = "t3.micro"
 }
 
 variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
-  default     = {}
 }
