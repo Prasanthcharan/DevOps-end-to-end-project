@@ -23,6 +23,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.port }}
+          command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
           env:
             - name: DATABASE_URL
               value: {{ .Values.env.DATABASE_URL | quote }}

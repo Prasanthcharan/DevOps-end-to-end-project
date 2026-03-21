@@ -113,7 +113,6 @@ jobs:
         run: |
           docker build \
             --tag ${{ steps.ecr.outputs.url }}:${{ steps.tag.outputs.tag }} \
-            --tag ${{ steps.ecr.outputs.url }}:latest \
             .
 
       - name: Trivy image scan
@@ -123,12 +122,10 @@ jobs:
             --severity HIGH,CRITICAL \
             --no-progress \
             ${{ steps.ecr.outputs.url }}:${{ steps.tag.outputs.tag }}
-        # exit-code 0 — report only, does not fail pipeline (TODO: set to 1 when base image is updated)
 
       - name: Push to ECR
         run: |
           docker push ${{ steps.ecr.outputs.url }}:${{ steps.tag.outputs.tag }}
-          docker push ${{ steps.ecr.outputs.url }}:latest
 
   # ──────────────────────────────────────────────
   # Deploy to EKS
