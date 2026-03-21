@@ -61,6 +61,8 @@ module "eks" {
   common_tags         = local.common_tags 
   jumpbox_security_group_id = module.jumpbox.jumpbox_security_group_id
   runner_security_group_id  = module.runner.runner_security_group_id
+  jumpbox_role_arn          = module.jumpbox.jumpbox_role_arn
+  runner_role_arn           = module.runner.runner_iam_role_arn
 }
 
 # ──────────────────────────────────────────────

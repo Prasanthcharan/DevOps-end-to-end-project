@@ -110,6 +110,45 @@ module "lb_controller_pod_identity" {
 }
 
 
+# ──────────────────────────────────────────────
+# EKS Access Entries — Jumpbox + Runner
+# ──────────────────────────────────────────────
+resource "aws_eks_access_entry" "jumpbox" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.jumpbox_role_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "jumpbox" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.jumpbox_role_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.jumpbox]
+}
+
+resource "aws_eks_access_entry" "runner" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.runner_role_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "runner" {
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.runner_role_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.runner]
+}
+
 resource "aws_security_group_rule" "jumpbox_to_eks" {
   type                     = "ingress"
   from_port                = 443

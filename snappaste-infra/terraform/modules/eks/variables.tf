@@ -53,6 +53,16 @@ variable "runner_security_group_id" {
   type        = string
 }
 
+variable "jumpbox_role_arn" {
+  description = "IAM role ARN of the jumpbox — granted EKS cluster-admin access"
+  type        = string
+}
+
+variable "runner_role_arn" {
+  description = "IAM role ARN of the GitHub Actions runner — granted EKS cluster-admin access"
+  type        = string
+}
+
 variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)

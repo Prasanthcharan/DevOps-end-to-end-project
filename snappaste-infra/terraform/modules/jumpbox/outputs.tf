@@ -12,3 +12,8 @@ output "jumpbox_security_group_id" {
   description = "Security group ID of the jumpbox"
   value       = aws_security_group.jumpbox.id
 }
+
+output "jumpbox_role_arn" {
+  description = "IAM role ARN of the jumpbox"
+  value       = aws_iam_role.jumpbox.arn
+}
