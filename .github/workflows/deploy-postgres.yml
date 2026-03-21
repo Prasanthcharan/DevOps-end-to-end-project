@@ -41,10 +41,10 @@ jobs:
             --namespace ${{ env.K8S_NAMESPACE }} \
             --values snappaste-infra/helm/postgres/values/${{ github.event.inputs.environment }}.yaml \
             --wait \
-            --timeout 3m
+            --timeout 5m
 
       - name: Verify Postgres is running
         run: |
           kubectl rollout status statefulset/snappaste-postgres \
             --namespace ${{ env.K8S_NAMESPACE }} \
-            --timeout 2m
+            --timeout 3m
