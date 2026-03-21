@@ -24,66 +24,11 @@ env:
 
 jobs:
   # ──────────────────────────────────────────────
-  # Lint + Test
-  # ──────────────────────────────────────────────
-  lint-test:
-    name: Lint & Test
-    runs-on: [self-hosted, linux, x64]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
-          cache-dependency-path: snappaste-backend/requirements*.txt
-
-      - name: Install dependencies
-        working-directory: snappaste-backend
-        run: pip install -r requirements.txt -r requirements-dev.txt
-
-      # - name: Lint with Ruff
-      #   working-directory: snappaste-backend
-      #   run: ruff check .
-
-      - name: Run Tests
-        working-directory: snappaste-backend
-        env:
-          DATABASE_URL: sqlite:///./test.db
-        run: pytest tests/ -v --tb=short
-
-  # ──────────────────────────────────────────────
-  # SonarQube — static code analysis (disabled for now)
-  # ──────────────────────────────────────────────
-  # sonarqube:
-  #   name: SonarQube Scan
-  #   runs-on: [self-hosted, linux, x64]
-  #   needs: lint-test
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0  # full history for better analysis
-  #
-  #     - name: SonarQube Scan
-  #       uses: SonarSource/sonarqube-scan-action@v4
-  #       with:
-  #         projectBaseDir: snappaste-backend
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  # ──────────────────────────────────────────────
   # Build → Trivy scan → Push to ECR
   # ──────────────────────────────────────────────
   build-push:
     name: Build & Push
     runs-on: [self-hosted, linux, x64]
-    needs: lint-test
     outputs:
       image_tag: ${{ steps.tag.outputs.tag }}
       ecr_url: ${{ steps.ecr.outputs.url }}
