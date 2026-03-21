@@ -90,6 +90,7 @@ module "jumpbox" {
   private_subnet_id = module.vpc.private_subnet_ids[0]
   instance_type     = var.jumpbox_instance_type
   common_tags       = local.common_tags
+  aws_region        = var.aws_region
 }
 
 # ──────────────────────────────────────────────

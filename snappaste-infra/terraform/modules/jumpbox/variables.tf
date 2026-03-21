@@ -27,3 +27,8 @@ variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
 }
+
+variable "aws_region" {
+  description = "aws region"
+  type = string
+}
