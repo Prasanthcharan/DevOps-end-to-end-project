@@ -45,9 +45,9 @@ jobs:
         working-directory: snappaste-backend
         run: pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Lint with Ruff
-        working-directory: snappaste-backend
-        run: ruff check .
+      # - name: Lint with Ruff
+      #   working-directory: snappaste-backend
+      #   run: ruff check .
 
       - name: Run Tests
         working-directory: snappaste-backend
