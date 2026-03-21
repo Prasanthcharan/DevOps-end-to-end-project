@@ -1,0 +1,50 @@
+name: Deploy Postgres
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy postgres to"
+        required: true
+        type: choice
+        options: [dev, staging, prod]
+
+env:
+  AWS_REGION: us-east-1
+  K8S_NAMESPACE: snappaste
+
+jobs:
+  deploy:
+    name: Deploy Postgres (${{ github.event.inputs.environment }})
+    runs-on: [self-hosted, linux, x64]
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig \
+            --name snappaste-${{ github.event.inputs.environment }}-eks \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace ${{ env.K8S_NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy Postgres via Helm
+        run: |
+          helm upgrade --install snappaste-postgres \
+            snappaste-infra/helm/postgres \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --values snappaste-infra/helm/postgres/values/${{ github.event.inputs.environment }}.yaml \
+            --wait \
+            --timeout 3m
+
+      - name: Verify Postgres is running
+        run: |
+          kubectl rollout status statefulset/snappaste-postgres \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --timeout 2m
