@@ -75,6 +75,29 @@ output "ssm_to_jumpbox" {
 }
 */
 # ──────────────────────────────────────────────
+# Monitoring Outputs
+# ──────────────────────────────────────────────
+output "mimir_bucket_name" {
+  description = "S3 bucket for Mimir metrics — use in Helm values"
+  value       = module.monitoring.mimir_bucket_name
+}
+
+output "loki_bucket_name" {
+  description = "S3 bucket for Loki logs — use in Helm values"
+  value       = module.monitoring.loki_bucket_name
+}
+
+output "mimir_role_arn" {
+  description = "IAM role ARN for Mimir Pod Identity — use in Helm values"
+  value       = module.monitoring.mimir_role_arn
+}
+
+output "loki_role_arn" {
+  description = "IAM role ARN for Loki Pod Identity — use in Helm values"
+  value       = module.monitoring.loki_role_arn
+}
+
+# ──────────────────────────────────────────────
 # Kubeconfig command
 # ──────────────────────────────────────────────
 output "configure_kubectl" {

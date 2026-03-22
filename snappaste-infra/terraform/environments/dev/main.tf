@@ -114,6 +114,20 @@ module "runner" {
 }
 
 # ──────────────────────────────────────────────
+# Monitoring — S3 buckets + Pod Identity for Mimir and Loki
+# ──────────────────────────────────────────────
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  project_name           = local.project_name
+  environment            = local.environment
+  eks_cluster_name       = module.eks.cluster_name
+  metrics_retention_days = 90
+  logs_retention_days    = 30
+  common_tags            = local.common_tags
+}
+
+# ──────────────────────────────────────────────
 # RDS (optional — uncomment to use RDS instead of K8s PostgreSQL)
 # ──────────────────────────────────────────────
 # module "rds" {

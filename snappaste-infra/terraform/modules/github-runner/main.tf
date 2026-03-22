@@ -98,28 +98,6 @@ resource "aws_iam_role_policy" "eks_access" {
   })
 }
 
-# S3 access — Terraform state bucket only (scoped by bucket name pattern, no account ID hardcoded)
-resource "aws_iam_role_policy" "s3_access" {
-  name = "${var.project_name}-${var.environment}-gh-runner-s3"
-  role = aws_iam_role.runner.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = ["s3:ListBucket", "s3:GetBucketVersioning"]
-        Resource = "arn:aws:s3:::${var.project_name}-terraform-state-${data.aws_caller_identity.current.account_id}"
-      },
-      {
-        Effect = "Allow"
-        Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-        Resource = "arn:aws:s3:::${var.project_name}-terraform-state-${data.aws_caller_identity.current.account_id}/*"
-      }
-    ]
-  })
-}
-
 # SSM access — runner token fetch + session manager
 resource "aws_iam_role_policy" "ssm_access" {
   name = "${var.project_name}-${var.environment}-gh-runner-ssm"

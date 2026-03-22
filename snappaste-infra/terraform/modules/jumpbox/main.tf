@@ -91,31 +91,11 @@ resource "aws_instance" "jumpbox" {
   # No key_name — SSM only, no SSH keys needed
   associate_public_ip_address = false
 
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    set -e
-
-    # Install kubectl
-    cd /tmp
-    curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    chmod +x kubectl
-    mv kubectl /usr/local/bin/kubectl
-
-    # Install Helm 3
-    curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-    # Install AWS CLI v2 (Amazon Linux 2023 may already have it, this ensures latest)
-    yum install -y aws-cli
-
-    # Set region for all SSM sessions
-    echo "export AWS_DEFAULT_REGION=${var.aws_region}" >> /etc/profile.d/aws.sh
-
-    # Helpful alias — auto-configure kubectl for this cluster on login
-    echo "alias kc='aws eks update-kubeconfig --name ${var.project_name}-${var.environment}-eks --region ${var.aws_region}'" >> /etc/profile.d/aws.sh
-
-    echo "Jumpbox setup complete"
-  EOF
-  )
+  user_data_base64 = base64encode(templatefile("${path.module}/user-data.sh", {
+    aws_region   = var.aws_region
+    project_name = var.project_name
+    environment  = var.environment
+  }))
 
   root_block_device {
     volume_size           = 10

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -uo pipefail
 
 # ──────────────────────────────────────────────
 # GitHub Actions Self-Hosted Runner Setup Script
@@ -8,6 +8,25 @@ set -euo pipefail
 # ──────────────────────────────────────────────
 
 export DEBIAN_FRONTEND=noninteractive
+
+# ── Wait for NAT Gateway / network to be ready ──
+# EC2 boots before NAT Gateway is fully routable — retry until network is up
+echo "Waiting for network connectivity..."
+for i in $(seq 1 30); do
+  if curl -s --max-time 5 -o /dev/null https://aws.amazon.com; then
+    echo "Network ready (attempt $i)"
+    break
+  fi
+  if [ "$i" -eq 30 ]; then
+    echo "ERROR: Network not available after 5 minutes. Aborting."
+    exit 1
+  fi
+  echo "Attempt $i: not ready, retrying in 10s..."
+  sleep 10
+done
+
+# Re-enable strict error handling now that network is confirmed
+set -e
 
 # System updates
 apt-get update -y
@@ -22,9 +41,9 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 apt-get update -y
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
 
-# ── kubectl ──
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+# ── kubectl (v1.34 — matches cluster version) ──
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update -y
 apt-get install -y kubectl
 
