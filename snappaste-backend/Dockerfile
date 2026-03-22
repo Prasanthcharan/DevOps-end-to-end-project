@@ -1,7 +1,7 @@
 # ── Stage 1: Install dependencies ──────────────────────────────────────────
 FROM python:3.11-slim AS builder
 
-WORKDIR /install
+WORKDIR /install 
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install/packages -r requirements.txt
